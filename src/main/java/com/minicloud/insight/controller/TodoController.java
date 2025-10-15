@@ -1,22 +1,24 @@
 package com.minicloud.insight.controller;
 
 import com.minicloud.insight.domain.Todo;
-import com.minicloud.insight.repository.TodoRepository;
 import com.minicloud.insight.service.TodoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.plaf.PanelUI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
+@Tag(name = "Todo API", description = "할 일 관리 API")
 public class TodoController {
     private final TodoService todoService;
 
+    @Operation(summary = "전체 Todo 목록 조회")
     @GetMapping // GET 요청 처리
     public ResponseEntity<List<Todo>> getAllTodos(){
         // service에서 모든 할 일 조회
@@ -28,6 +30,7 @@ public class TodoController {
         return ResponseEntity.ok(todos);
     }
 
+    @Operation(summary = "특정 Todo 조회")
     @GetMapping("/{id}")
     public ResponseEntity<Todo> getTodoById(@PathVariable Long id){
         // @PathVariable: URL의 {id} 부분을 파라미터로 받음
@@ -38,6 +41,7 @@ public class TodoController {
         return ResponseEntity.ok(todo);
     }
 
+    @Operation(summary = "새로운 Todo 생성")
     @PostMapping // POST 요청 처리
     public ResponseEntity<Todo> createTodo(@RequestBody Todo todo){
         // @RequestBody: HTTP 요청 Body의 JSON을 Java 객체로 변환
@@ -47,6 +51,7 @@ public class TodoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @Operation(summary = "Todo 수정")
     @PutMapping("/{id}")
     public ResponseEntity<Todo> updateTodo(
             @PathVariable Long id,
@@ -56,18 +61,21 @@ public class TodoController {
         return ResponseEntity.ok(update);
     }
 
+    @Operation(summary = "Todo 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable Long id){
         todoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "완료된 Todo 목록 조회")
     @GetMapping("/completed")
     public ResponseEntity<List<Todo>> getCompletedTodos(){
         List<Todo> completed = todoService.findByCompleted(true);
         return ResponseEntity.ok(completed);
     }
 
+    @Operation(summary = "미완료된 Todo 목록 조회")
     @GetMapping("/active")  // GET 요청, URL: /api/todos/active
     public ResponseEntity<List<Todo>> getActiveTodos() {
         // Service를 통해 미완료 할 일만 조회
