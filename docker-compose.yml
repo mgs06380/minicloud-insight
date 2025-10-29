@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Spring Boot Application
   app:
@@ -20,7 +18,30 @@ services:
       retries: 3
       start_period: 40s
 
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring-network
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: unless-stopped
+
 # 네트워크 설정
 networks:
   monitoring-network:
     driver: bridge
+
+# 볼륨 설정
+volumes:
+  prometheus-data:
+    driver: local
