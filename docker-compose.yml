@@ -36,6 +36,24 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     restart: unless-stopped
 
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring-network
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
 # 네트워크 설정
 networks:
   monitoring-network:
@@ -44,4 +62,6 @@ networks:
 # 볼륨 설정
 volumes:
   prometheus-data:
+    driver: local
+  grafana-data:
     driver: local
