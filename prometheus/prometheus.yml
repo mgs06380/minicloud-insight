@@ -1,18 +1,13 @@
 # Prometheus 글로벌 설정
 global:
-  scrape_interval: 15s      # 15초마다 메트릭 수집
-  evaluation_interval: 15s  # 15초마다 규칙 평가
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 # Alertmanager 설정 (선택사항)
 alerting:
   alertmanagers:
     - static_configs:
         - targets: []
-
-# 규칙 파일 로드 (선택사항)
-rule_files:
-# - "first_rules.yml"
-# - "second_rules.yml"
 
 # 스크래핑 설정
 scrape_configs:
