@@ -1,0 +1,33 @@
+# Prometheus 글로벌 설정
+global:
+  scrape_interval: 15s      # 15초마다 메트릭 수집
+  evaluation_interval: 15s  # 15초마다 규칙 평가
+
+# Alertmanager 설정 (선택사항)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# 규칙 파일 로드 (선택사항)
+rule_files:
+# - "first_rules.yml"
+# - "second_rules.yml"
+
+# 스크래핑 설정
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Spring Boot 애플리케이션 모니터링
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'minicloud-app'
