@@ -74,6 +74,23 @@ services:
       - elasticsearch-data:/usr/share/elasticsearch/data
     restart: unless-stopped
 
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - monitoring-network
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=
+      - XPACK_SECURITY_ENABLED=false
+    restart: unless-stopped
+    depends_on:
+      - elasticsearch
+
 # 네트워크 설정
 networks:
   monitoring-network:
