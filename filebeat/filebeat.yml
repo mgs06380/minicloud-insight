@@ -1,0 +1,55 @@
+# Filebeat 설정 파일
+
+# 입력 설정 (어떤 로그 파일을 읽을지)
+filebeat.inputs:
+  # Spring Boot 로그 수집
+  - type: filestream
+    id: spring-logs
+    enabled: true
+    paths:
+      - /app/logs/spring.log
+      - /app/logs/spring-error.log
+
+    # JSON 파싱 설정
+    parsers:
+      - ndjson:
+          keys_under_root: true
+          add_error_key: true
+          overwrite_keys: true
+
+    # 필드 추가
+    fields:
+      log_type: spring-boot
+      application: minicloud-insight
+    fields_under_root: true
+
+# 출력 설정 (어디로 보낼지)
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+
+  # 인덱스 설정
+  indices:
+    - index: "spring-logs-%{+yyyy.MM.dd}"
+      when.or:
+        - contains:
+            log_type: "spring-boot"
+
+  # 인덱스 템플릿 설정
+  setup.template.name: "spring-logs"
+  setup.template.pattern: "spring-logs-*"
+
+# 로깅 설정
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# 프로세서 설정 (데이터 가공)
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
