@@ -197,4 +197,25 @@ public class MonitoringController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     로그 레벨 테스트
+     */
+    @Operation(
+            summary = "로그 레벨 테스트",
+            description = "모든 로그 레벨(INFO, WARN, ERROR)을 테스트합니다."
+    )
+    @GetMapping("/log-test")
+    public ResponseEntity<Map<String, Object>> logTest() {
+        log.info("INFO 레벨 로그 - 일반 정보 메시지");
+        log.warn("WARN 레벨 로그 - 경고 메시지");
+        log.error("ERROR 레벨 로그 - 에러 메시지 (테스트)");
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "로그 레벨 테스트 완료");
+        response.put("log_levels", List.of("INFO", "WARN", "ERROR"));
+        response.put("log_file", "/app/logs/spring.log");
+
+        return ResponseEntity.ok(response);
+    }
+
 }
