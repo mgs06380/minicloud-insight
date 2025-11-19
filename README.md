@@ -329,7 +329,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **조석훈**
 
-- GitHub: [@your-username](https://github.com/your-username)
+- GitHub: [@your-username](https://github.com/mgs06380)
 - Email: your-email@example.com
 
 ---
