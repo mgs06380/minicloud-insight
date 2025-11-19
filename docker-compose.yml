@@ -11,6 +11,8 @@ services:
       - monitoring-network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    volumes:
+      - app-logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -54,6 +56,57 @@ services:
     depends_on:
       - prometheus
 
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - monitoring-network
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - monitoring-network
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=
+      - XPACK_SECURITY_ENABLED=false
+    restart: unless-stopped
+    depends_on:
+      - elasticsearch
+
+  # Filebeat
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: filebeat
+    user: root
+    networks:
+      - monitoring-network
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - app-logs:/app/logs:ro
+      - filebeat-data:/usr/share/filebeat/data
+    command: filebeat -e -strict.perms=false
+    restart: unless-stopped
+    depends_on:
+      - elasticsearch
+      - app
 # 네트워크 설정
 networks:
   monitoring-network:
@@ -64,4 +117,10 @@ volumes:
   prometheus-data:
     driver: local
   grafana-data:
+    driver: local
+  app-logs:
+    driver: local
+  elasticsearch-data:
+    driver: local
+  filebeat-data:
     driver: local
