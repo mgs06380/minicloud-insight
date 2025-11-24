@@ -52,6 +52,15 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
+
+      # SMTP 설정 추가
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=twins2479@gmail.com
+      - GF_SMTP_PASSWORD=tmgaixrnbgabxijk
+      - GF_SMTP_FROM_ADDRESS=twins2479@gmail.com
+      - GF_SMTP_FROM_NAME=MiniCloud Insight Alerts
+      - GF_SMTP_SKIP_VERIFY=true
     restart: unless-stopped
     depends_on:
       - prometheus
