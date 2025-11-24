@@ -14,16 +14,19 @@ COPY src ./src
 RUN gradle clean build -x test
 
 # 2단계: 실행 스테이지
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
+
+# curl 설치 (헬스체크용)
+RUN apk add --no-cache curl
 
 # 빌드된 JAR 파일 복사
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # 헬스체크 추가 (CI에서 사용)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # 포트 노출
 EXPOSE 8080

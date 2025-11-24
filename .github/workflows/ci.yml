@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
         continue-on-error: true  # 테스트 실패해도 계속 진행!
-        
+
       # 6. 테스트 결과 리포트 생성
       - name: Publish test report
         uses: mikepenz/action-junit-report@v4
